@@ -42,7 +42,7 @@ def photopost(request):
             # (기존)upload_unknown_file(post.image, post.owner, 0);
             # @params: 업로드 된 사진의 경로를 전달
             # faceApp/face_recognition_cli 로 제어 이동
-            upload_unknown_file(post.image.file);
+            upload_pictures(post.image, post.owner, "photopost")
             messages.info(request, "인코딩 성공!");
 
             return redirect('gallery')
@@ -64,17 +64,17 @@ def selfiepost(request):
         if form.is_valid():
             post = form.save(commit=False)
             post.owner = request.user
-            selfie_upload_btn(post.image.file, post.owner);
-
             post.save()
-            return redirect('gallery')
+
+            curUserId = curUser.id
+            selfies = Selfie.objects.all()
+            userSelfies = selfies.filter(owner_id=curUserId)
 
             # faceApp
-            # upload_unknown_file(post.image, post.owner, 0);
-            # upload_unknown_file("image 파일 경로");
-            #TODO. photoPost와 같은 로직으로 동작, 경로는 ID로 지정
-            #selfie_upload_btn(post.image.file, post.owner);
+            upload_pictures(post.image, post.owner, "selfiepost")
             messages.info(request, "셀피 업로드 성공!");
+
+            return render(request, 'selfie_gallery.html', {"usernamne": curUser.username, "userselfies": userSelfies})
 
     else :
         form = SelfiePost()
@@ -99,8 +99,8 @@ def detectphoto(request):
             messages.warning(request, "사진을 검출하려면 최소 한개 이상의 selfie를 등록해주셔야 합니다!")
             return redirect('home')
 
-        #TODO. 사진 검출 함수 호출
-        # compare_image(curUserId)
+        # 사진들 속에서 유저의 얼굴이 나온 사진을 검출
+        user_photos = compare_image(curUser.username, 0.4, False)
 
         return render(request, 'selfie_gallery.html', {"usernamne":curUser.username,"userselfies":userSelfies})
     return redirect('gallery')
