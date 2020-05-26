@@ -64,7 +64,8 @@ def detectphoto(request):
         # print(curUserId)
         selfies = Selfie.objects.all()
         userSelfies = selfies.filter(owner_id=curUserId)
-        # print(userSelfies.len())
+        # print(selfies)
+        # print(userSelfies)
         # print(userSelfies.count())
         if userSelfies.count() < 1:
             messages.warning(request, "사진을 검출하려면 최소 한개 이상의 selfie를 등록해주셔야 합니다!")
