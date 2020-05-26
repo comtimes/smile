@@ -42,7 +42,8 @@ def photopost(request):
             # (기존)upload_unknown_file(post.image, post.owner, 0);
             # @params: 업로드 된 사진의 경로를 전달
             # faceApp/face_recognition_cli 로 제어 이동
-            upload_pictures(post.image, post.owner, "photopost")
+            upload_unknown_file(post.image.file);
+
             messages.info(request, "인코딩 성공!");
 
             return redirect('gallery')
@@ -65,13 +66,17 @@ def selfiepost(request):
             post = form.save(commit=False)
             post.owner = request.user
             post.save()
+            return redirect('gallery')
 
             curUserId = curUser.id
             selfies = Selfie.objects.all()
             userSelfies = selfies.filter(owner_id=curUserId)
 
             # faceApp
-            upload_pictures(post.image, post.owner, "selfiepost")
+            # upload_unknown_file(post.image, post.owner, 0);
+            # upload_unknown_file("image 파일 경로");
+            #TODO. photoPost와 같은 로직으로 동작, 경로는 ID로 지정
+            #selfie_upload_btn(post.image.file, post.owner);
             messages.info(request, "셀피 업로드 성공!");
 
             return render(request, 'selfie_gallery.html', {"usernamne": curUser.username, "userselfies": userSelfies})
